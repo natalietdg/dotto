@@ -1,0 +1,131 @@
+.sidebar {
+  width: 350px;
+  background: #1a1f2e;
+  border-left: 2px solid #374151;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar.empty {
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid #374151;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #06b6d4;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #ef4444;
+}
+
+.sidebar-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.empty-message {
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.detail-section {
+  margin-bottom: 20px;
+}
+
+.detail-section label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.detail-value {
+  color: #e0e0e0;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.detail-value.code {
+  font-family: 'Courier New', monospace;
+  background: #0a0e1a;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #374151;
+}
+
+.detail-value.hash {
+  font-size: 11px;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.tx-link {
+  color: #06b6d4;
+  text-decoration: none;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.tx-link:hover {
+  color: #0891b2;
+  text-decoration: underline;
+}
+
+.dependency-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dependency-list li {
+  background: #0a0e1a;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  border-left: 3px solid #06b6d4;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.last-update {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #374151;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+}

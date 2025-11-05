@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+dotto_state.json
+artifacts.json
+*.log
+.DS_Store
+src/viewer/dist/
