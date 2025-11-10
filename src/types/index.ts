@@ -12,7 +12,7 @@ export interface ArtifactGraph {
   artifacts: Artifact[];
 }
 
-export interface DottoState {
+export interface dottoState {
   lastScan: string;
   artifacts: Record<string, {
     hash: string;

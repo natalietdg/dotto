@@ -11,34 +11,82 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import './App.css';
 import Sidebar from './components/Sidebar';
+import DemoGuide from './components/DemoGuide';
 import { Artifact } from './types';
 
-const API_BASE = '';
+interface ProofData {
+  epoch?: string;
+  merkleRoot?: string;
+  txId?: string;
+  hashscan?: string;
+  timestamp?: string;
+}
 
 function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [selectedNode, setSelectedNode] = useState<Artifact | null>(null);
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [proof, setProof] = useState<ProofData | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [loading, setLoading] = useState(true);
+  const [showDemoGuide, setShowDemoGuide] = useState(false);
 
-  const fetchArtifacts = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/artifacts`);
-      const data = await response.json();
-      setArtifacts(data.artifacts || []);
+      // Load graph.json
+      const graphRes = await fetch('/graph.json');
+      const graphData = await graphRes.json();
+      
+      // Handle both array and object format for nodes
+      const nodesArray = Array.isArray(graphData.nodes) 
+        ? graphData.nodes 
+        : Object.values(graphData.nodes || {});
+      
+      // Handle both array and object format for edges
+      const edgesArray = Array.isArray(graphData.edges)
+        ? graphData.edges
+        : Object.values(graphData.edges || {});
+      
+      // Convert graph nodes to artifacts
+      const artifactList: Artifact[] = nodesArray.map((node: any) => ({
+        id: node.id,
+        name: node.name || node.id.split(':').pop() || node.id,
+        status: node.metadata?.breaking ? 'drifted' : 
+                node.metadata?.intentDrift ? 'changed' : 'verified',
+        dependencies: edgesArray
+          .filter((e: any) => e.target === node.id)
+          .map((e: any) => e.source),
+        hash: node.hash || node.fileHash,
+        file: node.file || node.filePath,
+        filePath: node.filePath,
+        type: node.type,
+        lastModified: node.lastModified || new Date().toISOString(),
+        metadata: node.metadata || {},
+      }));
+      
+      setArtifacts(artifactList);
+      
+      // Load proof.json if exists
+      try {
+        const proofRes = await fetch('/proof.json');
+        const proofData = await proofRes.json();
+        setProof(proofData);
+      } catch (e) {
+        console.log('No proof.json found');
+      }
+      
       setLastUpdate(new Date());
+      setLoading(false);
     } catch (error) {
-      console.error('Failed to fetch artifacts:', error);
+      console.error('Failed to load data:', error);
+      setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchArtifacts();
-    const interval = setInterval(fetchArtifacts, 10000); // Poll every 10s
-    return () => clearInterval(interval);
-  }, [fetchArtifacts]);
+    fetchData();
+  }, [fetchData]);
 
   useEffect(() => {
     if (artifacts.length === 0) return;
@@ -55,14 +103,29 @@ function App() {
       return {
         id: artifact.id,
         type: 'default',
-        position: { x: col * 250 + 100, y: row * 150 + 100 },
+        position: { x: col * 300 + 100, y: row * 180 + 100 },
         data: {
           label: (
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
-                {artifact.id}
+            <div style={{ 
+              textAlign: 'center',
+              maxWidth: '250px',
+              overflow: 'hidden'
+            }}>
+              <div style={{ 
+                fontWeight: 'bold', 
+                marginBottom: '4px',
+                fontSize: '12px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
+                {artifact.name}
               </div>
-              <div style={{ fontSize: '10px', opacity: 0.7 }}>
+              <div style={{ 
+                fontSize: '10px', 
+                opacity: 0.7,
+                textTransform: 'lowercase'
+              }}>
                 {artifact.status}
               </div>
             </div>
@@ -73,9 +136,10 @@ function App() {
           color: '#fff',
           border: `2px solid ${nodeColor}`,
           borderRadius: '8px',
-          padding: '10px',
+          padding: '12px 16px',
           boxShadow: `0 0 20px ${nodeColor}40`,
-          minWidth: '120px',
+          minWidth: '180px',
+          maxWidth: '250px',
         },
       };
     });
@@ -114,50 +178,58 @@ function App() {
     [artifacts]
   );
 
-  const handleVerifyAll = async () => {
-    setIsVerifying(true);
-    try {
-      const response = await fetch(`${API_BASE}/api/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      const result = await response.json();
-      alert(`Verification complete! ${result.verified} schema(s) verified.`);
-      await fetchArtifacts();
-    } catch (error) {
-      alert(`Verification failed: ${(error as Error).message}`);
-    } finally {
-      setIsVerifying(false);
-    }
+  const handleRefresh = () => {
+    setLoading(true);
+    fetchData();
   };
 
-  const changedCount = artifacts.filter(
-    (a) => a.status === 'changed' || a.status === 'drifted'
-  ).length;
+  if (loading) {
+    return (
+      <div className="app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <p style={{ color: '#888' }}>Loading graph data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
       <div className="header">
-        <h1>🧠 DoTTO Viewer</h1>
+        <h1>🧠 dotto graph</h1>
         <div className="header-info">
+          <button
+            className="demo-guide-btn"
+            onClick={() => setShowDemoGuide(true)}
+            title="View Demo Guide"
+          >
+            📖 Demo Guide
+          </button>
+          {proof && proof.hashscan && (
+            <a 
+              href={proof.hashscan} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="proof-badge"
+              title="View proof on HashScan"
+            >
+              ✅ Verified on Hedera
+            </a>
+          )}
           <span className="status-badge verified">
-            {artifacts.filter((a) => a.status === 'verified').length} Verified
-          </span>
-          <span className="status-badge changed">
-            {artifacts.filter((a) => a.status === 'changed').length} Changed
+            {artifacts.filter((a) => a.status === 'verified').length} ✓ OK
           </span>
           <span className="status-badge drifted">
-            {artifacts.filter((a) => a.status === 'drifted').length} Drifted
+            {artifacts.filter((a) => a.status === 'drifted').length} ✗ Breaking
           </span>
           <button
             className="verify-btn"
-            onClick={handleVerifyAll}
-            disabled={isVerifying || changedCount === 0}
+            onClick={handleRefresh}
           >
-            {isVerifying ? 'Verifying...' : `Verify All (${changedCount})`}
+            🔄 Refresh
           </button>
         </div>
       </div>
+      
+      <DemoGuide isOpen={showDemoGuide} onClose={() => setShowDemoGuide(false)} />
 
       <div className="main-content">
         <div className="flow-container">
@@ -169,7 +241,7 @@ function App() {
             onNodeClick={handleNodeClick}
             fitView
           >
-            <Background color="#1f2937" gap={16} />
+            <Background color="#000" gap={16} />
             <Controls />
             <MiniMap
               nodeColor={(node) => {
@@ -179,7 +251,7 @@ function App() {
                 if (artifact.status === 'changed') return '#f59e0b';
                 return '#ef4444';
               }}
-              maskColor="#0a0e1a90"
+              maskColor="#00000090"
             />
           </ReactFlow>
         </div>

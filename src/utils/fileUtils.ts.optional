@@ -1,6 +1,28 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { glob } from 'glob';
 import * as crypto from 'crypto';
+
+export async function findSchemaFiles(rootDir: string): Promise<string[]> {
+  const patterns = [
+    '**/*.dto.ts',
+    '**/*.schema.ts',
+    '**/*.schema.json',
+  ];
+
+  const files: string[] = [];
+  
+  for (const pattern of patterns) {
+    const matches = await glob(pattern, {
+      cwd: rootDir,
+      ignore: ['node_modules/**', 'dist/**', '.git/**'],
+      absolute: true,
+    });
+    files.push(...matches);
+  }
+
+  return [...new Set(files)];
+}
 
 export function computeFileHash(filePath: string): string {
   const content = fs.readFileSync(filePath, 'utf-8');

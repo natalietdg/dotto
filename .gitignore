@@ -6,3 +6,6 @@ artifacts.json
 *.log
 .DS_Store
 src/viewer/dist/
+examples/fx-payload.dto.ts
+examples/loan.dto.ts
+examples/user.dto.ts

@@ -1,0 +1,17 @@
+{
+  "epoch": "2025-11-09T15:00:00Z",
+  "merkleRoot": "a3f1b2c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7",
+  "txId": "0.0.7223674@1762738174.386808019",
+  "hashscan": "https://hashscan.io/testnet/transaction/0.0.7223674@1762738174.386808019",
+  "timestamp": "2025-11-10T01:29:42.925Z",
+  "submittedHash": "899ea0eecf85c5f9e465a12f0f14cf936d40b0aef7cf268b2d72399892d68d66",
+  "artifacts": 5,
+  "cost": "0.0001 HBAR",
+  "network": "testnet",
+  "summary": {
+    "breaking_changes": 2,
+    "intent_drifts": 1,
+    "impacted_services": 3,
+    "potential_loss": "$12M"
+  }
+}

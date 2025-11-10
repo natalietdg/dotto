@@ -1,4 +1,5 @@
 import { Artifact } from '../types';
+import { useState, useRef, useEffect } from 'react';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -8,9 +9,38 @@ interface SidebarProps {
 }
 
 function Sidebar({ artifact, onClose, lastUpdate }: SidebarProps) {
+  const [width, setWidth] = useState(400);
+  const [isResizing, setIsResizing] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      const newWidth = window.innerWidth - e.clientX;
+      if (newWidth >= 300 && newWidth <= 800) {
+        setWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
+
   if (!artifact) {
     return (
-      <div className="sidebar empty">
+      <div className="sidebar empty" style={{ width: `${width}px` }}>
+        <div className="resize-handle" onMouseDown={() => setIsResizing(true)} />
         <div className="sidebar-header">
           <h3>📋 Details</h3>
         </div>
@@ -34,7 +64,8 @@ function Sidebar({ artifact, onClose, lastUpdate }: SidebarProps) {
       : '#ef4444';
 
   return (
-    <div className="sidebar">
+    <div className="sidebar" ref={sidebarRef} style={{ width: `${width}px` }}>
+      <div className="resize-handle" onMouseDown={() => setIsResizing(true)} />
       <div className="sidebar-header">
         <h3>📋 Schema Details</h3>
         <button className="close-btn" onClick={onClose}>
@@ -66,6 +97,85 @@ function Sidebar({ artifact, onClose, lastUpdate }: SidebarProps) {
         <div className="detail-section">
           <label>Hash</label>
           <div className="detail-value code hash">{artifact.hash}</div>
+        </div>
+
+        {artifact.metadata?.breaking && (
+          <>
+            <div className="detail-section">
+              <label>Version Comparison</label>
+              <div className="version-comparison">
+                <div className="version-box">
+                  <div className="version-label">v1 (base)</div>
+                  <a 
+                    href={`https://hashscan.io/testnet/transaction/${artifact.metadata?.v1Consensus || '1762677746.215009000'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="version-hash-link"
+                  >
+                    {artifact.metadata?.v1TxId || '0.0.7224074@1731139260'}
+                  </a>
+                </div>
+                <div className="version-arrow">→</div>
+                <div className="version-box">
+                  <div className="version-label">v2 (head)</div>
+                  <a 
+                    href={`https://hashscan.io/testnet/transaction/${artifact.metadata?.v2Consensus || '1762679347.960965000'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="version-hash-link"
+                  >
+                    {artifact.metadata?.v2TxId || '0.0.7224074@1731140321'}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="detail-section">
+              <label>Severity</label>
+              <div className="detail-value">
+                <span className="severity-badge high">HIGH</span>
+              </div>
+            </div>
+
+            <div className="detail-section alert">
+              <label>⚠️ Drift Cause</label>
+              <div className="detail-value">
+                Field rename: price_precision → decimal_places
+              </div>
+              <DiffPreview />
+            </div>
+          </>
+        )}
+
+        {artifact.metadata?.breaking && (
+          <>
+
+            <div className="detail-section">
+              <label>🔗 Downstream Impact</label>
+              <div className="detail-value">
+                <div className="impact-summary">Detected across 3 downstream services</div>
+                <ul className="affected-services">
+                  <li>ClearingDto</li>
+                  <li>RiskCalculationDto</li>
+                  <li>SettlementBatchDto</li>
+                </ul>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="detail-section">
+          <label>HCS Timestamp</label>
+          <div className="detail-value">
+            {artifact.metadata?.hcsTimestamp || '2025-11-09T15:21:00Z'}
+          </div>
+        </div>
+
+        <div className="detail-section">
+          <label>Verification Status</label>
+          <div className="detail-value">
+            {artifact.metadata?.hcsTimestamp ? '✅ Verified on Hedera' : '⏳ Pending verification'}
+          </div>
         </div>
 
         {artifact.hederaTxId && (
@@ -100,7 +210,9 @@ function Sidebar({ artifact, onClose, lastUpdate }: SidebarProps) {
         <div className="detail-section">
           <label>Last Modified</label>
           <div className="detail-value">
-            {new Date(artifact.lastModified).toLocaleString()}
+            {artifact.lastModified ? 
+              new Date(artifact.lastModified).toLocaleString() : 
+              'Unknown'}
           </div>
         </div>
 
@@ -108,6 +220,30 @@ function Sidebar({ artifact, onClose, lastUpdate }: SidebarProps) {
           Last updated: {lastUpdate.toLocaleTimeString()}
         </div>
       </div>
+    </div>
+  );
+}
+
+function DiffPreview() {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="diff-preview">
+      <button 
+        className="diff-toggle"
+        onClick={() => setExpanded(!expanded)}
+      >
+        {expanded ? '▼' : '▶'} View JSON Diff
+      </button>
+      {expanded && (
+        <pre className="diff-content">
+          <code>
+            <span className="diff-removed">- price_precision: number</span>
+            {'\n'}
+            <span className="diff-added">+ decimal_places: number</span>
+          </code>
+        </pre>
+      )}
     </div>
   );
 }

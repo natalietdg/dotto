@@ -1,0 +1,85 @@
+{
+  "nodes": [
+    {
+      "id": "examples/bank-a/trade-core/TradeDto.ts:TradeDto",
+      "name": "TradeDto",
+      "type": "interface",
+      "file": "examples/bank-a/trade-core/TradeDto.ts",
+      "fileHash": "899ea0eecf85c5f9e465a12f0f14cf936d40b0aef7cf268b2d72399892d68d66",
+      "lastModified": "2025-11-09T15:21:00Z",
+      "metadata": {
+        "breaking": true,
+        "intentDrift": true,
+        "hcsTimestamp": "2025-11-09T15:21:00Z",
+        "v1TxId": "0.0.7223674@1762677739.827436664",
+        "v2TxId": "0.0.7223674@1762738174.386808019",
+        "v1Consensus": "1762677746.215009000",
+        "v2Consensus": "0.0.7223674@1762738174.386808019"
+      }
+    },
+    {
+      "id": "examples/bank-a/clearing/ClearingDto.ts:ClearingDto",
+      "name": "ClearingDto",
+      "type": "interface",
+      "file": "examples/bank-a/clearing/ClearingDto.ts",
+      "fileHash": "fdd8edb8fed132b458aaf88b580325022f41b0ecdaa3a8672a1c7b08536ab6b6",
+      "lastModified": "2025-11-09T15:21:00Z",
+      "metadata": {
+        "breaking": true,
+        "hcsTimestamp": "2025-11-09T15:21:00Z"
+      }
+    },
+    {
+      "id": "examples/bank-a/risk-engine/RiskDto.ts:RiskCalculationDto",
+      "name": "RiskCalculationDto",
+      "type": "interface",
+      "file": "examples/bank-a/risk-engine/RiskDto.ts",
+      "fileHash": "e99e5651121b6a83a6ec3c624e9c7b7fed2554d9c71e664fb8d0611d5bdb1c86",
+      "lastModified": "2025-11-09T15:21:00Z",
+      "metadata": {
+        "breaking": true,
+        "hcsTimestamp": "2025-11-09T15:21:00Z"
+      }
+    },
+    {
+      "id": "examples/bank-a/clearing/ClearingDto.ts:SettlementBatchDto",
+      "name": "SettlementBatchDto",
+      "type": "interface",
+      "file": "examples/bank-a/clearing/ClearingDto.ts",
+      "fileHash": "fdd8edb8fed132b458aaf88b580325022f41b0ecdaa3a8672a1c7b08536ab6b6",
+      "lastModified": "2025-11-09T15:21:00Z",
+      "metadata": {}
+    },
+    {
+      "id": "examples/bank-a/risk-engine/RiskDto.ts:ExposureDto",
+      "name": "ExposureDto",
+      "type": "interface",
+      "file": "examples/bank-a/risk-engine/RiskDto.ts",
+      "fileHash": "e99e5651121b6a83a6ec3c624e9c7b7fed2554d9c71e664fb8d0611d5bdb1c86",
+      "lastModified": "2025-11-09T15:21:00Z",
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": "examples/bank-a/trade-core/TradeDto.ts:TradeDto",
+      "target": "examples/bank-a/clearing/ClearingDto.ts:ClearingDto",
+      "type": "dependency"
+    },
+    {
+      "source": "examples/bank-a/trade-core/TradeDto.ts:TradeDto",
+      "target": "examples/bank-a/risk-engine/RiskDto.ts:RiskCalculationDto",
+      "type": "dependency"
+    },
+    {
+      "source": "examples/bank-a/clearing/ClearingDto.ts:ClearingDto",
+      "target": "examples/bank-a/clearing/ClearingDto.ts:SettlementBatchDto",
+      "type": "dependency"
+    },
+    {
+      "source": "examples/bank-a/risk-engine/RiskDto.ts:RiskCalculationDto",
+      "target": "examples/bank-a/risk-engine/RiskDto.ts:ExposureDto",
+      "type": "dependency"
+    }
+  ]
+}
