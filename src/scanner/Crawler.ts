@@ -17,6 +17,7 @@ export class Crawler {
   constructor(graphEngine: GraphEngine) {
     this.graphEngine = graphEngine;
     this.tsScanner = new TypeScriptScanner();
+    this.tsScanner.setGraphEngine(graphEngine); // Enable field-level tracking
     this.apiScanner = new OpenAPIScanner();
   }
   
