@@ -99,51 +99,35 @@ function Sidebar({ artifact, onClose, lastUpdate }: SidebarProps) {
           <div className="detail-value code hash">{artifact.hash}</div>
         </div>
 
-        {artifact.metadata?.breaking && (
+        {artifact.metadata?.drift && (
           <>
             <div className="detail-section">
-              <label>Version Comparison</label>
-              <div className="version-comparison">
-                <div className="version-box">
-                  <div className="version-label">v1 (base)</div>
-                  <a 
-                    href={`https://hashscan.io/testnet/transaction/${artifact.metadata?.v1Consensus || '1762677746.215009000'}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="version-hash-link"
-                  >
-                    {artifact.metadata?.v1TxId || '0.0.7224074@1731139260'}
-                  </a>
-                </div>
-                <div className="version-arrow">→</div>
-                <div className="version-box">
-                  <div className="version-label">v2 (head)</div>
-                  <a 
-                    href={`https://hashscan.io/testnet/transaction/${artifact.metadata?.v2Consensus || '1762679347.960965000'}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="version-hash-link"
-                  >
-                    {artifact.metadata?.v2TxId || '0.0.7224074@1731140321'}
-                  </a>
-                </div>
+              <label>Change Type</label>
+              <div className="detail-value">
+                <span className="severity-badge" style={{ 
+                  background: artifact.metadata.drift.breaking ? '#ef444420' : '#f59e0b20',
+                  color: artifact.metadata.drift.breaking ? '#ef4444' : '#f59e0b'
+                }}>
+                  {artifact.metadata.drift.changeType.toUpperCase()}
+                  {artifact.metadata.drift.breaking && ' (BREAKING)'}
+                </span>
               </div>
             </div>
 
-            <div className="detail-section">
-              <label>Severity</label>
-              <div className="detail-value">
-                <span className="severity-badge high">HIGH</span>
+            {artifact.metadata.drift.changes && artifact.metadata.drift.changes.length > 0 && (
+              <div className="detail-section alert">
+                <label>⚠️ Changes Detected</label>
+                <div className="detail-value">
+                  <ul className="change-list">
+                    {artifact.metadata.drift.changes.map((change: any, idx: number) => (
+                      <li key={idx} className={change.breaking ? 'breaking-change' : 'safe-change'}>
+                        <strong>{change.type.replace(/_/g, ' ')}:</strong> {change.description}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
-
-            <div className="detail-section alert">
-              <label>⚠️ Drift Cause</label>
-              <div className="detail-value">
-                Field rename: price_precision → decimal_places
-              </div>
-              <DiffPreview />
-            </div>
+            )}
           </>
         )}
 

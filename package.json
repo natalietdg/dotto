@@ -1,17 +1,33 @@
 {
-  "name": "dotto-cli",
+  "name": "@natalietdg/dotto",
   "version": "1.1.0",
   "description": "Data Object Trace & Transparency Orchestrator - Enterprise-grade schema dependency analysis with optional proof backends",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "dotto": "./dist/cli/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
-    "dev": "node submit-proof.js && cd src/viewer && npm install && npm run dev",
+    "prepublishOnly": "npm run build",
+    "dev": "npm run build && node dist/cli/index.js scan; node dist/cli/index.js crawl && node scripts/prepare-viewer.js && cd src/viewer && npm install && npm run dev",
+    "demo": "npm run build && node dist/cli/index.js crawl && node scripts/prepare-viewer.js && cd src/viewer && npm run dev",
     "test": "echo \"Tests coming soon\" && exit 0",
     "clean": "rm -rf dist"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/natalietdg/dotto.git"
+  },
+  "bugs": {
+    "url": "https://github.com/natalietdg/dotto/issues"
+  },
+  "homepage": "https://github.com/natalietdg/dotto#readme",
   "keywords": [
     "schema",
     "dependency-graph",
@@ -24,17 +40,22 @@
     "provenance",
     "hedera"
   ],
-  "author": "",
+  "author": "Natalie Leong",
   "license": "MIT",
   "dependencies": {
     "@hashgraph/sdk": "^2.54.0",
+    "chalk": "^4.1.2",
     "commander": "^12.0.0",
+    "dotenv": "^16.4.5",
+    "fast-glob": "^3.3.2",
     "typescript": "^5.3.3",
-    "archiver": "^7.0.1"
+    "archiver": "^7.0.1",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
-    "@types/archiver": "^6.0.2"
+    "@types/archiver": "^6.0.2",
+    "@types/js-yaml": "^4.0.9"
   },
   "engines": {
     "node": ">=18.0.0"

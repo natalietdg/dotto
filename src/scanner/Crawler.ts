@@ -24,8 +24,11 @@ export class Crawler {
     const startTime = Date.now();
     const patterns = options.patterns || [
       '**/*.dto.ts',
+      '**/*Dto.ts',
       '**/*.schema.ts',
+      '**/*Schema.ts',
       '**/*.interface.ts',
+      '**/*Interface.ts',
       '**/*.openapi.{json,yaml,yml}',
       '**/*.swagger.{json,yaml,yml}',
       '**/openapi.{json,yaml,yml}',

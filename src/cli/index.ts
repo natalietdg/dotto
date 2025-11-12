@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import {
   initCommand,
   crawlCommand,
+  scanCommand,
   impactCommand,
   whyCommand,
   checkCommand,
@@ -37,6 +38,19 @@ program
   .action(async (options) => {
     try {
       await crawlCommand(options);
+    } catch (error) {
+      console.error('Error:', (error as Error).message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('scan')
+  .description('Scan repository for schema changes (git-aware)')
+  .option('--base <commit>', 'Base commit to compare against', 'HEAD')
+  .action(async (options) => {
+    try {
+      await scanCommand(options);
     } catch (error) {
       console.error('Error:', (error as Error).message);
       process.exit(1);

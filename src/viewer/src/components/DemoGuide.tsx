@@ -21,40 +21,29 @@ function DemoGuide({ isOpen, onClose }: DemoGuideProps) {
           <section>
             <h3>🧩 What You're Seeing</h3>
             <p>
-              Bank A's trading system suffered a <strong>$12 million precision drift</strong> —
-              a schema rename that quietly changed how money was rounded.
+              This is a <strong>live dependency graph</strong> generated from scanning the actual codebase.
+              dotto has analyzed TypeScript DTOs and their relationships in real-time.
             </p>
             <ul>
-              <li><span className="status-dot verified">🟢</span> <strong>Verified</strong> — Code version matches proof on Hedera</li>
-              <li><span className="status-dot drifted">🔴</span> <strong>Drifted</strong> — Structural change detected</li>
-              <li><span className="status-dot changed">🟡</span> <strong>Intent Drift</strong> — When a schema change hides a logic or meaning shift</li>
+              <li><strong>Nodes</strong> — Each represents a schema (DTO, interface, or type)</li>
+              <li><strong>Edges</strong> — Show import dependencies between schemas</li>
+              <li><strong>Colors</strong> — Indicate schema types (dto, schema, interface, enum)</li>
             </ul>
           </section>
 
           <section>
-            <h3>⚠️ The Problem</h3>
+            <h3>⚠️ The Problem dotto Solves</h3>
             <p>
-              A developer renamed a field:
+              In complex systems, schemas don't exist in isolation. When you change a DTO:
             </p>
-            <div className="code-block">
-              <code>
-                price_precision → decimal_places
-              </code>
-            </div>
+            <ul>
+              <li><strong>Breaking changes</strong> can cascade through dependent services</li>
+              <li><strong>Field renames</strong> may hide semantic shifts in business logic</li>
+              <li><strong>Type changes</strong> can break downstream consumers silently</li>
+            </ul>
             <p>
-              It looked harmless — but that rename carried an assumption:<br />
-              that rounding behavior would stay the same.
-            </p>
-            <p><strong>It didn't.</strong></p>
-            <div className="intent-comparison">
-              <div><strong>Old:</strong> floor rounding (conservative)</div>
-              <div><strong>New:</strong> bankers' rounding (accurate)</div>
-            </div>
-            <p className="impact">
-              💥 This invisible logic drift mis-settled <strong>$12 million</strong> across clearing and risk systems.
-            </p>
-            <p>
-              The schema change exposed the gap between what the system did and what the developer <em>thought</em> it did.
+              Example: Renaming <code>price_precision</code> to <code>decimal_places</code> might seem harmless,
+              but if it changes rounding behavior (floor → bankers' rounding), it could cause settlement errors.
             </p>
           </section>
 
@@ -71,41 +60,37 @@ function DemoGuide({ isOpen, onClose }: DemoGuideProps) {
           </section>
 
           <section>
-            <h3>💡 How Dotto Helps</h3>
+            <h3>💡 How dotto Helps</h3>
             <ol>
-              <li><strong>Schema Drift → Intent Drift</strong> — Detects renamed or broken fields, surfacing where meaning may have shifted</li>
-              <li><strong>Impact Analysis</strong> — Maps downstream services that inherit that shift</li>
-              <li><strong>Hedera Proof</strong> — Anchors every version hash on Hedera, making intent and proof immutable</li>
+              <li><strong>Automatic Scanning</strong> — Parses TypeScript and OpenAPI files to build dependency graph</li>
+              <li><strong>Impact Analysis</strong> — Shows all downstream schemas affected by a change</li>
+              <li><strong>Schema Diffing</strong> — Detects breaking vs non-breaking changes (field additions, type changes, etc.)</li>
+              <li><strong>Git Integration</strong> — Compares commits to detect schema drift over time</li>
+              <li><strong>Hedera Proofs (Optional)</strong> — Anchors schema versions on Hedera for immutable audit trails</li>
             </ol>
           </section>
 
           <section>
-            <h3>🚀 Try It</h3>
+            <h3>🚀 Try It Yourself</h3>
+            <p><strong>In this demo:</strong></p>
             <ol>
-              <li>Click any 🔴 node to see drift details</li>
-              <li>Review the <strong>Drift Cause</strong> to see what changed</li>
-              <li>Notice how schema drift reveals intent drift — what the system now <em>means</em></li>
-              <li>Click <strong>✅ Verified on Hedera</strong> to open the public proof on HashScan</li>
+              <li>Click any node to see its schema details</li>
+              <li>Red nodes show breaking changes detected in working directory</li>
+              <li>View exact field changes in the sidebar</li>
+              <li>Explore dependency relationships via edges</li>
             </ol>
-          </section>
-
-          <div className="demo-stats">
-            <h3>Key Stats</h3>
-            <div className="stats-grid">
-              <div className="stat-item">
-                <div className="stat-value">$12M</div>
-                <div className="stat-label">Potential Loss Prevented</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-value">5</div>
-                <div className="stat-label">Artifacts Impacted</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-value">&lt; 1s</div>
-                <div className="stat-label">Detection Time</div>
-              </div>
+            
+            <p><strong>In your own project:</strong></p>
+            <div className="code-block">
+              <code>
+                npm install -g @natalietdg/dotto<br/>
+                cd your-typescript-project<br/>
+                dotto init<br/>
+                dotto crawl<br/>
+                dotto scan  # Detect breaking changes
+              </code>
             </div>
-          </div>
+          </section>
 
           <section>
             <h3>🔐 Why Hedera</h3>
@@ -118,8 +103,8 @@ function DemoGuide({ isOpen, onClose }: DemoGuideProps) {
           </section>
 
           <p className="demo-footer">
-            🧩 <strong>Dotto</strong> turns tribal knowledge into verifiable intent.<br />
-            Every change now has its context, its impact, and its proof — all in one view.
+            🧩 <strong>dotto</strong> makes schema dependencies visible and verifiable.<br />
+            Understand impact before you ship. Detect drift before it breaks production.
           </p>
           </div>
         </div>

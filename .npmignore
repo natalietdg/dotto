@@ -1,0 +1,37 @@
+# Source files
+src/
+tsconfig.json
+
+# Examples and demos
+examples/
+demo-runner/
+submit-proof.js
+create-topic.js
+
+# Development files
+.env
+.env.example
+*.log
+graph.json
+graph.html
+
+# Viewer (separate package)
+src/viewer/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+node_modules/
+*.tgz

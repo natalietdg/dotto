@@ -10,13 +10,16 @@ dotto helps engineering teams understand and manage schema dependencies across T
 
 ## ✨ Features
 
-### Core Capabilities
+### Core Capabilities (MVP v1.1)
+- **Real Repository Scanning** - Scans actual TypeScript/OpenAPI codebases, not static JSON
+- **Git-Aware Schema Diffing** - Compares baseline vs HEAD to detect breaking changes
+- **Structured Diff Engine** - Detects added/removed fields, type changes, required field changes
 - **Incremental Dependency Graph** - Diff-based updates, only processes changed files
 - **Impact Analysis** - BFS traversal to identify downstream dependents (depth ≤3)
 - **Provenance Tracing** - Reverse dependency chains showing schema origins
 - **Intention Tracking** - Parse `@intent` doc comments to detect semantic drift
-- **Compatibility Checking** - Detect type changes, enum drift, required field additions
-- **Static Visualization** - Standalone HTML graph with React Flow
+- **Auto-Generated Visualization** - Creates HTML graph from actual scan results
+- **CI/CD Integration** - GitHub Actions workflow for automated schema checks
 
 ### Performance
 - Parse <1000 files in <2s
@@ -60,8 +63,40 @@ node dist/cli/index.js graph
 Initialize dotto in the current directory. Creates `graph.json`.
 
 ```bash
-node dist/cli/index.js init
+dotto init
 ```
+
+### `dotto scan` (NEW - MVP v1.1)
+
+**Git-aware schema change detection** - Scans repository for breaking changes.
+
+```bash
+# Scan for uncommitted changes
+dotto scan
+
+# Compare against specific commit
+dotto scan --base <commit-hash>
+```
+
+**Output:**
+```
+📊 Schema Diff Report
+
+⚠️  2 breaking change(s):
+
+  ❌ UserDto (modified)
+     • Required property "email" was added (breaking)
+     • Property "password" type changed from "string" to "HashedPassword"
+
+✓ 1 non-breaking change(s):
+
+  ℹ️  OrderDto (modified)
+     • Optional property "notes" was added
+```
+
+**Exit codes:**
+- `0` - No changes or non-breaking changes only
+- `1` - Breaking changes detected
 
 ### `dotto crawl`
 
@@ -69,10 +104,10 @@ Scan codebase and build the dependency graph.
 
 ```bash
 # Full crawl
-node dist/cli/index.js crawl
+dotto crawl
 
 # Incremental (only changed files)
-node dist/cli/index.js crawl --diff
+dotto crawl --diff
 ```
 
 **Output:**
@@ -334,7 +369,7 @@ Tested on MacBook Pro M1, Node 20:
 ## 📦 Installation
 
 ```bash
-npm install -g dotto-cli
+npm install -g @natalietdg/dotto
 ```
 
 Then use globally:
@@ -342,6 +377,12 @@ Then use globally:
 dotto init
 dotto crawl
 dotto impact <NODE_ID>
+```
+
+Or use locally in your project:
+```bash
+npm install --save-dev @natalietdg/dotto
+npx dotto init
 ```
 
 ## 🤝 Contributing

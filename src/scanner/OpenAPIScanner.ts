@@ -4,7 +4,7 @@
  */
 
 import * as fs from 'fs';
-import * as yaml from 'yaml';
+import * as yaml from 'js-yaml';
 import { GraphNode, GraphEdge } from '../core/types';
 
 export class OpenAPIScanner {
@@ -13,7 +13,7 @@ export class OpenAPIScanner {
     const content = fs.readFileSync(filePath, 'utf-8');
     const spec = filePath.endsWith('.json') 
       ? JSON.parse(content)
-      : yaml.parse(content);
+      : yaml.load(content);
     
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];

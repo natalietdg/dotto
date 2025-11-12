@@ -1,0 +1,63 @@
+name: Schema Drift Detection
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+jobs:
+  schema-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Need full history for git diff
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dotto
+        run: npm install -g @natalietdg/dotto
+      
+      - name: Initialize dotto
+        run: dotto init
+      
+      - name: Scan for schema changes
+        id: scan
+        run: |
+          dotto scan || echo "BREAKING_CHANGES=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Generate impact report
+        if: steps.scan.outputs.BREAKING_CHANGES == 'true'
+        run: |
+          dotto crawl
+          dotto graph -o schema-impact.html
+      
+      - name: Upload impact report
+        if: steps.scan.outputs.BREAKING_CHANGES == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: schema-impact-report
+          path: schema-impact.html
+      
+      - name: Comment on PR
+        if: steps.scan.outputs.BREAKING_CHANGES == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ **Breaking schema changes detected!** Please review the impact report in the workflow artifacts.'
+            })
+      
+      - name: Fail if breaking changes
+        if: steps.scan.outputs.BREAKING_CHANGES == 'true'
+        run: exit 1

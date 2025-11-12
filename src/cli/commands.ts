@@ -11,6 +11,8 @@ import { CompatibilityChecker } from '../analysis/CompatibilityChecker';
 import { GraphGenerator } from '../ui/GraphGenerator';
 import { createProofBackend } from '../proof';
 import { ProofEvent } from '../core/types';
+import { GitScanner } from '../git/GitScanner';
+import { SchemaDiffer } from '../diff/SchemaDiffer';
 
 export async function initCommand(): Promise<void> {
   console.log(chalk.cyan('\n🧠 Initializing dotto...\n'));
@@ -99,6 +101,70 @@ export async function graphCommand(options: { html?: boolean; output?: string })
   generator.generate(outputPath);
   console.log(chalk.green(`✓ Generated ${outputPath}\n`));
   console.log(chalk.gray(`Open in browser: file://${process.cwd()}/${outputPath}\n`));
+}
+
+export async function scanCommand(options: { base?: string }): Promise<void> {
+  console.log(chalk.cyan('\n🔍 Scanning repository for schema changes...\n'));
+  
+  const gitScanner = new GitScanner();
+  
+  try {
+    // Check if we're in a git repo
+    const currentCommit = gitScanner.getCurrentCommit();
+    console.log(chalk.gray(`Current commit: ${currentCommit.substring(0, 8)}\n`));
+    
+    // Scan for changes
+    const result = await gitScanner.scanUncommittedChanges();
+    
+    // Format and display diff report
+    const differ = new SchemaDiffer();
+    const report = differ.formatDiffReport(result.diffs);
+    console.log(report);
+    
+    // Save diffs to file for viewer
+    const fs = require('fs');
+    const diffData = {
+      timestamp: new Date().toISOString(),
+      baseCommit: result.baseCommit,
+      headCommit: result.headCommit,
+      diffs: result.diffs.map(d => ({
+        nodeId: d.nodeId,
+        name: d.name,
+        type: d.type,
+        changeType: d.changeType,
+        breaking: d.breaking,
+        changes: d.changes,
+      })),
+      filesChanged: result.filesChanged,
+    };
+    fs.writeFileSync('drift.json', JSON.stringify(diffData, null, 2));
+    console.log(chalk.gray('💾 Saved drift report to drift.json\n'));
+    
+    // Show impacted files
+    if (result.filesChanged.length > 0) {
+      console.log(chalk.gray(`\n📁 Files changed: ${result.filesChanged.length}`));
+      result.filesChanged.slice(0, 5).forEach(file => {
+        console.log(chalk.gray(`  • ${file}`));
+      });
+      if (result.filesChanged.length > 5) {
+        console.log(chalk.gray(`  ... and ${result.filesChanged.length - 5} more\n`));
+      }
+    }
+    
+    // Exit with error code if breaking changes found
+    const hasBreaking = result.diffs.some(d => d.breaking);
+    if (hasBreaking) {
+      console.log(chalk.red('❌ Breaking changes detected\n'));
+      process.exit(1);
+    } else if (result.diffs.length > 0) {
+      console.log(chalk.yellow('⚠️  Non-breaking changes detected\n'));
+    } else {
+      console.log(chalk.green('✓ No schema changes detected\n'));
+    }
+  } catch (error) {
+    console.log(chalk.red(`\n❌ ${(error as Error).message}\n`));
+    process.exit(1);
+  }
 }
 
 export async function recordProofCommand(

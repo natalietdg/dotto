@@ -21,7 +21,7 @@ export class TypeScriptScanner {
     
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
-    const dependencies: Set<string> = new Set();
+    const importedTypes: Map<string, string> = new Map(); // type name -> file path
     
     const visit = (node: ts.Node) => {
       // Extract @intent from JSDoc
@@ -57,7 +57,14 @@ export class TypeScriptScanner {
         if (ts.isStringLiteral(moduleSpecifier)) {
           const importPath = moduleSpecifier.text;
           if (importPath.startsWith('.') || importPath.startsWith('/')) {
-            dependencies.add(importPath);
+            // Extract imported names
+            if (node.importClause?.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
+              node.importClause.namedBindings.elements.forEach(element => {
+                const typeName = element.name.text;
+                const resolvedPath = this.resolveImportPath(importPath, filePath);
+                importedTypes.set(typeName, resolvedPath);
+              });
+            }
           }
         }
       }
@@ -67,14 +74,14 @@ export class TypeScriptScanner {
     
     visit(sourceFile);
     
-    // Create dependency edges
-    nodes.forEach(node => {
-      dependencies.forEach(dep => {
-        const depId = this.resolveImportId(dep, filePath);
+    // Create dependency edges based on imported types
+    importedTypes.forEach((importFilePath, typeName) => {
+      const sourceNodeId = `${importFilePath}:${typeName}`;
+      nodes.forEach(targetNode => {
         edges.push({
-          id: `${node.id}-uses-${depId}`,
-          source: node.id,
-          target: depId,
+          id: `${sourceNodeId}-to-${targetNode.id}`,
+          source: sourceNodeId,
+          target: targetNode.id,
           type: 'uses',
           confidence: 0.9,
         });
@@ -222,9 +229,15 @@ export class TypeScriptScanner {
     return `${relativePath}:${name}`.replace(/[^a-zA-Z0-9:/_.-]/g, '_');
   }
   
-  private resolveImportId(importPath: string, fromFile: string): string {
+  private resolveImportPath(importPath: string, fromFile: string): string {
     const dir = path.dirname(fromFile);
-    const resolved = path.resolve(dir, importPath);
-    return resolved.replace(process.cwd(), '').replace(/^\//, '');
+    let resolved = path.resolve(dir, importPath);
+    
+    // Add .ts extension if not present
+    if (!resolved.endsWith('.ts') && !resolved.endsWith('.tsx')) {
+      resolved += '.ts';
+    }
+    
+    return resolved.replace(process.cwd() + '/', '');
   }
 }

@@ -34,9 +34,23 @@ function App() {
 
   const fetchData = useCallback(async () => {
     try {
-      // Load graph.json
-      const graphRes = await fetch('/graph.json');
+      // Load graph.json (try root first, fallback to public)
+      let graphRes;
+      try {
+        graphRes = await fetch('/graph.json');
+      } catch {
+        graphRes = await fetch('../../../graph.json');
+      }
       const graphData = await graphRes.json();
+      
+      // Load drift.json if available
+      let driftData = { diffs: [] };
+      try {
+        const driftRes = await fetch('/drift.json');
+        driftData = await driftRes.json();
+      } catch {
+        // No drift data available
+      }
       
       // Handle both array and object format for nodes
       const nodesArray = Array.isArray(graphData.nodes) 
@@ -48,22 +62,36 @@ function App() {
         ? graphData.edges
         : Object.values(graphData.edges || {});
       
+      // Create drift lookup map
+      const driftMap = new Map(driftData.diffs.map((d: any) => [d.nodeId, d]));
+      
       // Convert graph nodes to artifacts
-      const artifactList: Artifact[] = nodesArray.map((node: any) => ({
-        id: node.id,
-        name: node.name || node.id.split(':').pop() || node.id,
-        status: node.metadata?.breaking ? 'drifted' : 
-                node.metadata?.intentDrift ? 'changed' : 'verified',
-        dependencies: edgesArray
-          .filter((e: any) => e.target === node.id)
-          .map((e: any) => e.source),
-        hash: node.hash || node.fileHash,
-        file: node.file || node.filePath,
-        filePath: node.filePath,
-        type: node.type,
-        lastModified: node.lastModified || new Date().toISOString(),
-        metadata: node.metadata || {},
-      }));
+      const artifactList: Artifact[] = nodesArray.map((node: any) => {
+        const drift = driftMap.get(node.id);
+        const status = drift?.breaking ? 'drifted' : 'verified';
+        
+        return {
+          id: node.id,
+          name: node.name || node.id.split(':').pop() || node.id,
+          status,
+          dependencies: edgesArray
+            .filter((e: any) => e.target === node.id)
+            .map((e: any) => e.source),
+          hash: node.hash || node.fileHash,
+          file: node.file || node.filePath,
+          filePath: node.filePath,
+          type: node.type,
+          lastModified: node.lastModified || new Date().toISOString(),
+          metadata: {
+            ...node.metadata,
+            drift: drift ? {
+              changeType: drift.changeType,
+              breaking: drift.breaking,
+              changes: drift.changes,
+            } : undefined,
+          },
+        };
+      });
       
       setArtifacts(artifactList);
       
