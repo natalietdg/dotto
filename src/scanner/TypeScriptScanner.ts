@@ -8,7 +8,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { GraphNode, GraphEdge, PropertyInfo } from '../core/types';
 
+import { GraphEngine } from '../graph/GraphEngine';
+
 export class TypeScriptScanner {
+  private graphEngine?: GraphEngine;
+  
+  setGraphEngine(engine: GraphEngine) {
+    this.graphEngine = engine;
+  }
   
   scan(filePath: string, fileHash: string): { nodes: GraphNode[]; edges: GraphEdge[] } {
     const content = fs.readFileSync(filePath, 'utf-8');
@@ -78,19 +85,74 @@ export class TypeScriptScanner {
     
     visit(sourceFile);
     
-    // Create dependency edges based on imported types
-    importedTypes.forEach((importFilePath, typeName) => {
-      const sourceNodeId = `${importFilePath}:${typeName}`;
-      nodes.forEach(targetNode => {
-        edges.push({
-          id: `${sourceNodeId}-to-${targetNode.id}`,
-          source: sourceNodeId,
-          target: targetNode.id,
-          type: 'uses',
-          confidence: 0.9,
+    // Layer 0: Type-level edges (cheap + reliable)
+    // If OrderDto has property trade: TradeDto, create edge TradeDto → OrderDto
+    nodes.forEach(targetNode => {
+      if (!targetNode.properties) return;
+      
+      targetNode.properties.forEach(prop => {
+        importedTypes.forEach((importFilePath, typeName) => {
+          // Extract base type from complex types: TradeDto[], TradeDto | null, Record<string, TradeDto>
+          const baseType = this.extractBaseType(prop.type);
+          
+          if (baseType === typeName) {
+            const sourceNodeId = `${importFilePath}:${typeName}`;
+            edges.push({
+              id: `${sourceNodeId}-to-${targetNode.id}`,
+              source: sourceNodeId,
+              target: targetNode.id,
+              type: 'uses',
+              confidence: 1.0,
+              metadata: {
+                layer: 'type_reference',
+                propertyName: prop.name,
+                propertyType: prop.type,
+              },
+            });
+          }
         });
       });
     });
+    
+    // Layer 1: Field-level via transparent schema references
+    // If OrderDto.total: Money, create field-path edges for each Money field
+    if (this.graphEngine) {
+      nodes.forEach(targetNode => {
+        if (!targetNode.properties) return;
+        
+        targetNode.properties.forEach(targetProp => {
+          importedTypes.forEach((importFilePath, typeName) => {
+            const baseType = this.extractBaseType(targetProp.type);
+            
+            // Check if this property is a direct reference to an imported type
+            if (baseType === typeName) {
+              const sourceNodeId = `${importFilePath}:${typeName}`;
+              const sourceNode = this.graphEngine!.getNode(sourceNodeId);
+              
+              // If source type has properties, create field-path edges
+              if (sourceNode && sourceNode.properties) {
+                sourceNode.properties.forEach(sourceField => {
+                  edges.push({
+                    id: `${sourceNodeId}:${sourceField.name}-to-${targetNode.id}:${targetProp.name}.${sourceField.name}`,
+                    source: sourceNodeId,
+                    target: targetNode.id,
+                    type: 'uses',
+                    confidence: 0.95,
+                    metadata: {
+                      layer: 'field_path',
+                      sourceField: sourceField.name,
+                      targetProperty: targetProp.name,
+                      targetFieldPath: `${targetProp.name}.${sourceField.name}`,
+                      note: `${targetNode.name}.${targetProp.name} is ${typeName}, so ${typeName}.${sourceField.name} changes affect ${targetNode.name}.${targetProp.name}.${sourceField.name}`,
+                    },
+                  });
+                });
+              }
+            }
+          });
+        });
+      });
+    }
     
     return { nodes, edges };
   }
@@ -220,12 +282,39 @@ export class TypeScriptScanner {
           const type = member.type ? member.type.getText(sourceFile) : 'any';
           const required = !member.questionToken;
           
-          properties.push({ name, type, required });
+          // Extract JSDoc comment for field-level intent
+          const description = this.extractPropertyDescription(member, sourceFile);
+          
+          properties.push({ name, type, required, description });
         }
       }
     });
     
     return properties;
+  }
+  
+  private extractPropertyDescription(node: ts.Node, sourceFile: ts.SourceFile): string | undefined {
+    const jsDoc = (node as any).jsDoc;
+    if (!jsDoc || jsDoc.length === 0) return undefined;
+    
+    for (const doc of jsDoc) {
+      const comment = doc.comment;
+      if (typeof comment === 'string') {
+        return comment.trim();
+      }
+    }
+    return undefined;
+  }
+  
+  private extractBaseType(typeStr: string): string {
+    typeStr = typeStr.replace(/\[\]/g, '');
+    const arrayMatch = typeStr.match(/Array<([^>]+)>/);
+    if (arrayMatch) return arrayMatch[1].trim();
+    const recordMatch = typeStr.match(/Record<[^,]+,\s*([^>]+)>/);
+    if (recordMatch) return recordMatch[1].trim();
+    typeStr = typeStr.split('|')[0].trim();
+    typeStr = typeStr.replace(/\?/g, '').trim();
+    return typeStr;
   }
   
   private generateId(filePath: string, name: string): string {
