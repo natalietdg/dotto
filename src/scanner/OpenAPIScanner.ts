@@ -11,6 +11,10 @@ export class OpenAPIScanner {
   
   async scan(filePath: string, fileHash: string): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
     const content = fs.readFileSync(filePath, 'utf-8');
+    
+    // Normalize to relative path
+    const relativePath = this.toRelativePath(filePath);
+    
     const spec = filePath.endsWith('.json') 
       ? JSON.parse(content)
       : yaml.load(content);
@@ -21,7 +25,7 @@ export class OpenAPIScanner {
     // Extract schemas/components
     if (spec.components?.schemas) {
       for (const [name, schema] of Object.entries(spec.components.schemas)) {
-        const node = this.parseSchema(name, schema as any, filePath, fileHash);
+        const node = this.parseSchema(name, schema as any, relativePath, fileHash);
         nodes.push(node);
       }
     }
@@ -31,7 +35,7 @@ export class OpenAPIScanner {
       for (const [pathStr, pathItem] of Object.entries(spec.paths)) {
         for (const [method, operation] of Object.entries(pathItem as any)) {
           if (['get', 'post', 'put', 'delete', 'patch'].includes(method)) {
-            const apiNode = this.parseOperation(pathStr, method, operation, filePath, fileHash);
+            const apiNode = this.parseOperation(pathStr, method, operation, relativePath, fileHash);
             nodes.push(apiNode);
             
             // Create edges to referenced schemas
@@ -40,7 +44,7 @@ export class OpenAPIScanner {
               edges.push({
                 id: `${apiNode.id}-uses-${ref}`,
                 source: apiNode.id,
-                target: `${filePath}:${ref}`,
+                target: `${relativePath}:${ref}`,
                 type: 'uses',
                 confidence: 1.0,
               });
@@ -122,5 +126,16 @@ export class OpenAPIScanner {
     }
     
     return Array.from(refs);
+  }
+  
+  /**
+   * Convert absolute path to relative path from project root
+   */
+  private toRelativePath(absolutePath: string): string {
+    const cwd = process.cwd();
+    if (absolutePath.startsWith(cwd)) {
+      return absolutePath.substring(cwd.length + 1);
+    }
+    return absolutePath;
   }
 }

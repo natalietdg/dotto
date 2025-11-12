@@ -6,6 +6,19 @@ artifacts.json
 *.log
 .DS_Store
 src/viewer/dist/
+
+# Generated files (don't commit)
+graph.json
+drift.json
+*.html
+.dotto-baseline.json
+.dotto-head.json
+
+# Viewer generated files
+src/viewer/public/graph.json
+src/viewer/public/drift.json
+
+# Example files
 examples/fx-payload.dto.ts
 examples/loan.dto.ts
 examples/user.dto.ts

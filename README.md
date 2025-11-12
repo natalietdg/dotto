@@ -36,24 +36,52 @@ dotto helps engineering teams understand and manage schema dependencies across T
 
 ## 🚀 Quick Start
 
+### For Users (Install from npm)
 ```bash
-# 1. Install dependencies
+# Install globally
+npm install -g @natalietdg/dotto
+
+# Initialize in your project
+cd your-typescript-project
+dotto init
+
+# Scan for schemas
+dotto crawl
+
+# Detect breaking changes
+dotto scan
+
+# View impact
+dotto impact <node-id>
+
+# Generate visualization
+dotto graph
+```
+
+### For Development (Run from source)
+```bash
+# 1. Clone and install
+git clone https://github.com/natalietdg/dotto.git
+cd dotto
 npm install
 
-# 2. Build the CLI
+# 2. Build
 npm run build
 
-# 3. Initialize dotto
+# 3. Run commands
 node dist/cli/index.js init
-
-# 4. Crawl your codebase
 node dist/cli/index.js crawl
+node dist/cli/index.js scan
 
-# 5. Analyze impact
-node dist/cli/index.js impact <NODE_ID>
-
-# 6. Generate visualization
-node dist/cli/index.js graph
+# 4. View live dependency graph with drift detection
+npm run dev
+# Opens http://localhost:5173
+# - Builds CLI
+# - Scans codebase
+# - Detects drift
+# - Launches interactive viewer
+# - Red nodes = breaking changes
+# - Click nodes to see exact field changes
 ```
 
 ## 📖 Commands

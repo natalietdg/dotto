@@ -12,8 +12,12 @@ export class TypeScriptScanner {
   
   scan(filePath: string, fileHash: string): { nodes: GraphNode[]; edges: GraphEdge[] } {
     const content = fs.readFileSync(filePath, 'utf-8');
+    
+    // Normalize to relative path
+    const relativePath = this.toRelativePath(filePath);
+    
     const sourceFile = ts.createSourceFile(
-      filePath,
+      relativePath,
       content,
       ts.ScriptTarget.Latest,
       true
@@ -29,25 +33,25 @@ export class TypeScriptScanner {
       
       // Parse interfaces
       if (ts.isInterfaceDeclaration(node) && node.name) {
-        const interfaceNode = this.parseInterface(node, sourceFile, filePath, fileHash, intent);
+        const interfaceNode = this.parseInterface(node, sourceFile, relativePath, fileHash, intent);
         nodes.push(interfaceNode);
       }
       
       // Parse classes (DTOs)
       if (ts.isClassDeclaration(node) && node.name) {
-        const classNode = this.parseClass(node, sourceFile, filePath, fileHash, intent);
+        const classNode = this.parseClass(node, sourceFile, relativePath, fileHash, intent);
         nodes.push(classNode);
       }
       
       // Parse type aliases
       if (ts.isTypeAliasDeclaration(node) && node.name) {
-        const typeNode = this.parseTypeAlias(node, sourceFile, filePath, fileHash, intent);
+        const typeNode = this.parseTypeAlias(node, sourceFile, relativePath, fileHash, intent);
         nodes.push(typeNode);
       }
       
       // Parse enums
       if (ts.isEnumDeclaration(node) && node.name) {
-        const enumNode = this.parseEnum(node, sourceFile, filePath, fileHash, intent);
+        const enumNode = this.parseEnum(node, sourceFile, relativePath, fileHash, intent);
         nodes.push(enumNode);
       }
       
@@ -239,5 +243,16 @@ export class TypeScriptScanner {
     }
     
     return resolved.replace(process.cwd() + '/', '');
+  }
+  
+  /**
+   * Convert absolute path to relative path from project root
+   */
+  private toRelativePath(absolutePath: string): string {
+    const cwd = process.cwd();
+    if (absolutePath.startsWith(cwd)) {
+      return absolutePath.substring(cwd.length + 1);
+    }
+    return absolutePath;
   }
 }
