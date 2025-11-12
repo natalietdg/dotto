@@ -30,7 +30,8 @@ jobs:
       - name: Scan for schema changes
         id: scan
         run: |
-          dotto scan || echo "BREAKING_CHANGES=true" >> $GITHUB_OUTPUT
+          # Compare PR branch against main branch
+          dotto scan --base origin/main || echo "BREAKING_CHANGES=true" >> $GITHUB_OUTPUT
         continue-on-error: true
       
       - name: Generate impact report

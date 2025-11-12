@@ -118,6 +118,71 @@ export class GitScanner {
   }
   
   /**
+   * Compare two commits or branches
+   */
+  async scanCommitRange(baseRef: string, headRef: string): Promise<GitComparisonResult> {
+    const baseCommit = this.resolveRef(baseRef);
+    const headCommit = this.resolveRef(headRef);
+    
+    console.log(`Comparing ${baseRef} (${baseCommit.substring(0, 8)}) → ${headRef} (${headCommit.substring(0, 8)})`);
+    
+    // Get changed files between commits
+    const filesChanged = this.getChangedFilesBetweenCommits(baseCommit, headCommit);
+    
+    if (filesChanged.length === 0) {
+      return {
+        baseCommit,
+        headCommit,
+        diffs: [],
+        filesChanged: [],
+      };
+    }
+    
+    // Checkout base commit temporarily
+    const currentBranch = this.getCurrentBranch();
+    execSync(`git checkout ${baseCommit}`, { cwd: this.repoPath, stdio: 'ignore' });
+    
+    try {
+      // Scan base commit
+      const baseEngine = new GraphEngine('.dotto-baseline.json');
+      const baseCrawler = new Crawler(baseEngine);
+      await baseCrawler.crawl();
+      const baseNodes = new Map(baseEngine.getAllNodes().map(n => [n.id, n]));
+      
+      // Checkout head commit
+      execSync(`git checkout ${headCommit}`, { cwd: this.repoPath, stdio: 'ignore' });
+      
+      // Scan head commit
+      const headEngine = new GraphEngine('.dotto-head.json');
+      const headCrawler = new Crawler(headEngine);
+      await headCrawler.crawl();
+      const headNodes = new Map(headEngine.getAllNodes().map(n => [n.id, n]));
+      
+      // Compute diffs
+      const differ = new SchemaDiffer();
+      const diffs = differ.diffMany(baseNodes, headNodes);
+      
+      // Cleanup
+      try {
+        fs.unlinkSync('.dotto-baseline.json');
+        fs.unlinkSync('.dotto-head.json');
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+      
+      return {
+        baseCommit,
+        headCommit,
+        diffs,
+        filesChanged,
+      };
+    } finally {
+      // Always restore original branch
+      execSync(`git checkout ${currentBranch}`, { cwd: this.repoPath, stdio: 'ignore' });
+    }
+  }
+  
+  /**
    * Compare current working directory against last commit
    */
   async scanUncommittedChanges(): Promise<GitComparisonResult> {
@@ -181,6 +246,53 @@ export class GitScanner {
         this.unstashChanges();
       }
       throw error;
+    }
+  }
+  
+  /**
+   * Resolve a git ref (branch, tag, commit) to full commit hash
+   */
+  private resolveRef(ref: string): string {
+    try {
+      return execSync(`git rev-parse ${ref}`, { cwd: this.repoPath, encoding: 'utf-8' }).trim();
+    } catch (error) {
+      throw new Error(`Failed to resolve git ref: ${ref}`);
+    }
+  }
+  
+  /**
+   * Get current branch name
+   */
+  private getCurrentBranch(): string {
+    try {
+      return execSync('git rev-parse --abbrev-ref HEAD', { cwd: this.repoPath, encoding: 'utf-8' }).trim();
+    } catch (error) {
+      return 'HEAD';
+    }
+  }
+  
+  /**
+   * Get changed files between two commits
+   */
+  private getChangedFilesBetweenCommits(baseCommit: string, headCommit: string): string[] {
+    try {
+      const output = execSync(
+        `git diff --name-only ${baseCommit} ${headCommit}`,
+        { cwd: this.repoPath, encoding: 'utf-8' }
+      );
+      
+      return output
+        .split('\n')
+        .filter(f => f.trim())
+        .filter(f => 
+          f.endsWith('.ts') || 
+          f.endsWith('.tsx') || 
+          f.endsWith('.json') || 
+          f.endsWith('.yaml') || 
+          f.endsWith('.yml')
+        );
+    } catch (error) {
+      return [];
     }
   }
   

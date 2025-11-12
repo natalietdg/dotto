@@ -114,7 +114,9 @@ export async function scanCommand(options: { base?: string }): Promise<void> {
     console.log(chalk.gray(`Current commit: ${currentCommit.substring(0, 8)}\n`));
     
     // Scan for changes
-    const result = await gitScanner.scanUncommittedChanges();
+    const result = options.base 
+      ? await gitScanner.scanCommitRange(options.base, 'HEAD')
+      : await gitScanner.scanUncommittedChanges();
     
     // Format and display diff report
     const differ = new SchemaDiffer();
