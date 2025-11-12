@@ -12,14 +12,14 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Need full history for git diff
       
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       
       - name: Install dotto
         run: npm install -g @natalietdg/dotto
@@ -41,14 +41,14 @@ jobs:
       
       - name: Upload impact report
         if: steps.scan.outputs.BREAKING_CHANGES == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: schema-impact-report
           path: schema-impact.html
       
       - name: Comment on PR
         if: steps.scan.outputs.BREAKING_CHANGES == 'true' && github.event_name == 'pull_request'
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             github.rest.issues.createComment({
