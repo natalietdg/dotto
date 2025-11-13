@@ -12,6 +12,7 @@ import 'reactflow/dist/style.css';
 import './App.css';
 import Sidebar from './components/Sidebar';
 import DemoGuide from './components/DemoGuide';
+import { CertificateDashboard } from './components/CertificateDashboard';
 import { Artifact } from './types';
 
 interface ProofData {
@@ -31,6 +32,7 @@ function App() {
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(true);
   const [showDemoGuide, setShowDemoGuide] = useState(false);
+  const [activeTab, setActiveTab] = useState<'graph' | 'certificate'>('graph');
 
   const fetchData = useCallback(async () => {
     try {
@@ -222,7 +224,21 @@ function App() {
   return (
     <div className="app">
       <div className="header">
-        <h1>🧠 dotto graph</h1>
+        <h1>🧠 dotto</h1>
+        <div className="tabs">
+          <button
+            className={`tab ${activeTab === 'graph' ? 'active' : ''}`}
+            onClick={() => setActiveTab('graph')}
+          >
+            Dependency Graph
+          </button>
+          <button
+            className={`tab ${activeTab === 'certificate' ? 'active' : ''}`}
+            onClick={() => setActiveTab('certificate')}
+          >
+            Drift Certificate
+          </button>
+        </div>
         <div className="header-info">
           <button
             className="demo-guide-btn"
@@ -259,37 +275,41 @@ function App() {
       
       <DemoGuide isOpen={showDemoGuide} onClose={() => setShowDemoGuide(false)} />
 
-      <div className="main-content">
-        <div className="flow-container">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodeClick={handleNodeClick}
-            fitView
-          >
-            <Background color="#000" gap={16} />
-            <Controls />
-            <MiniMap
-              nodeColor={(node) => {
-                const artifact = artifacts.find((a) => a.id === node.id);
-                if (!artifact) return '#4b5563';
-                if (artifact.status === 'verified') return '#10b981';
-                if (artifact.status === 'changed') return '#f59e0b';
-                return '#ef4444';
-              }}
-              maskColor="#00000090"
-            />
-          </ReactFlow>
-        </div>
+      {activeTab === 'graph' ? (
+        <div className="main-content">
+          <div className="flow-container">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onNodeClick={handleNodeClick}
+              fitView
+            >
+              <Background color="#000" gap={16} />
+              <Controls />
+              <MiniMap
+                nodeColor={(node) => {
+                  const artifact = artifacts.find((a) => a.id === node.id);
+                  if (!artifact) return '#4b5563';
+                  if (artifact.status === 'verified') return '#10b981';
+                  if (artifact.status === 'changed') return '#f59e0b';
+                  return '#ef4444';
+                }}
+                maskColor="#00000090"
+              />
+            </ReactFlow>
+          </div>
 
-        <Sidebar
-          artifact={selectedNode}
-          onClose={() => setSelectedNode(null)}
-          lastUpdate={lastUpdate}
-        />
-      </div>
+          <Sidebar
+            artifact={selectedNode}
+            onClose={() => setSelectedNode(null)}
+            lastUpdate={lastUpdate}
+          />
+        </div>
+      ) : (
+        <CertificateDashboard />
+      )}
     </div>
   );
 }

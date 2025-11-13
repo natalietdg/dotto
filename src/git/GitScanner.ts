@@ -263,11 +263,25 @@ export class GitScanner {
   /**
    * Get current branch name
    */
-  private getCurrentBranch(): string {
+  getCurrentBranch(): string {
     try {
       return execSync('git rev-parse --abbrev-ref HEAD', { cwd: this.repoPath, encoding: 'utf-8' }).trim();
     } catch (error) {
       return 'HEAD';
+    }
+  }
+  
+  /**
+   * Get repository name from git remote
+   */
+  getRepositoryName(): string {
+    try {
+      const remote = execSync('git config --get remote.origin.url', { cwd: this.repoPath, encoding: 'utf-8' }).trim();
+      // Extract repo name from URL (e.g., git@github.com:user/repo.git -> user/repo)
+      const match = remote.match(/[:/]([^/]+\/[^/]+?)(\.git)?$/);
+      return match ? match[1] : 'unknown';
+    } catch (error) {
+      return 'unknown';
     }
   }
   
