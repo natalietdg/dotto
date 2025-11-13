@@ -10,6 +10,8 @@ import {
   checkCommand,
   graphCommand,
   recordProofCommand,
+  anchorCommand,
+  verifyCommand,
 } from './commands';
 
 const program = new Command();
@@ -115,6 +117,31 @@ program
   .action(async (nodeId, options) => {
     try {
       await recordProofCommand(nodeId, options);
+    } catch (error) {
+      console.error('Error:', (error as Error).message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('anchor [file]')
+  .description('Anchor drift certificate to Hedera')
+  .option('--backend <backend>', 'Proof backend: hedera|sigstore', 'hedera')
+  .action(async (file, options) => {
+    try {
+      await anchorCommand(file, options);
+    } catch (error) {
+      console.error('Error:', (error as Error).message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('verify <tx-id>')
+  .description('Verify proof on Hedera')
+  .action(async (txId) => {
+    try {
+      await verifyCommand(txId);
     } catch (error) {
       console.error('Error:', (error as Error).message);
       process.exit(1);

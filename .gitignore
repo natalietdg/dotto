@@ -7,16 +7,21 @@ artifacts.json
 .DS_Store
 src/viewer/dist/
 
-# Generated files (don't commit)
+# Generated files
 graph.json
 drift.json
-*.html
+*.dotto-*.json
 .dotto-baseline.json
 .dotto-head.json
 
-# Viewer generated files
+# Drift certificates (generated)
+.dotto/
+driftpack.json
+
+# Viewer copies
 src/viewer/public/graph.json
 src/viewer/public/drift.json
+src/viewer/public/driftpack.json
 
 # Example files
 examples/fx-payload.dto.ts

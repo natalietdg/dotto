@@ -43,6 +43,35 @@ code, pre, .font-mono, .code {
   align-items: center;
   border-bottom: 2px solid var(--color-accent);
   box-shadow: 0 4px 6px var(--shadow);
+  gap: 2rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tab {
+  padding: 0.5rem 1.5rem;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.tab.active {
+  background: var(--color-accent);
+  color: #000;
+  border-color: var(--color-accent);
 }
 
 .header h1 {

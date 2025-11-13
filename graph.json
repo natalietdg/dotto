@@ -71,7 +71,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.679Z"
+      "lastModified": "2025-11-13T03:49:20.177Z"
     },
     "examples/bank-a/clearing/ClearingDto.ts:SettlementBatchDto": {
       "id": "examples/bank-a/clearing/ClearingDto.ts:SettlementBatchDto",
@@ -114,7 +114,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.679Z"
+      "lastModified": "2025-11-13T03:49:20.177Z"
     },
     "examples/bank-a/clearing/ClearingDto.ts:ReconciliationDto": {
       "id": "examples/bank-a/clearing/ClearingDto.ts:ReconciliationDto",
@@ -157,7 +157,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.679Z"
+      "lastModified": "2025-11-13T03:49:20.177Z"
     },
     "examples/bank-a/risk-engine/RiskDto.ts:RiskCalculationDto": {
       "id": "examples/bank-a/risk-engine/RiskDto.ts:RiskCalculationDto",
@@ -235,7 +235,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.681Z"
+      "lastModified": "2025-11-13T03:49:20.180Z"
     },
     "examples/bank-a/risk-engine/RiskDto.ts:ExposureDto": {
       "id": "examples/bank-a/risk-engine/RiskDto.ts:ExposureDto",
@@ -298,7 +298,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.681Z"
+      "lastModified": "2025-11-13T03:49:20.180Z"
     },
     "examples/bank-a/risk-engine/RiskDto.ts:PortfolioRiskDto": {
       "id": "examples/bank-a/risk-engine/RiskDto.ts:PortfolioRiskDto",
@@ -356,7 +356,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.681Z"
+      "lastModified": "2025-11-13T03:49:20.180Z"
     },
     "examples/bank-a/risk-engine/RiskDto.ts:VaRDto": {
       "id": "examples/bank-a/risk-engine/RiskDto.ts:VaRDto",
@@ -404,7 +404,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.681Z"
+      "lastModified": "2025-11-13T03:49:20.180Z"
     },
     "examples/bank-a/trade-core/TradeDto.ts:TradeDto": {
       "id": "examples/bank-a/trade-core/TradeDto.ts:TradeDto",
@@ -477,7 +477,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.682Z"
+      "lastModified": "2025-11-13T03:49:20.182Z"
     },
     "examples/bank-a/trade-core/TradeDto.ts:OrderDto": {
       "id": "examples/bank-a/trade-core/TradeDto.ts:OrderDto",
@@ -540,7 +540,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.682Z"
+      "lastModified": "2025-11-13T03:49:20.182Z"
     },
     "examples/bank-a/trade-core/TradeDto.ts:ExecutionReportDto": {
       "id": "examples/bank-a/trade-core/TradeDto.ts:ExecutionReportDto",
@@ -593,7 +593,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.682Z"
+      "lastModified": "2025-11-13T03:49:20.182Z"
     }
   },
   "edges": {
@@ -648,5 +648,5 @@
     }
   },
   "version": "1.1.0",
-  "lastCrawl": "2025-11-12T06:26:45.683Z"
+  "lastCrawl": "2025-11-13T03:49:20.182Z"
 }

@@ -10,6 +10,8 @@ const rootGraphPath = path.join(__dirname, '../graph.json');
 const viewerGraphPath = path.join(__dirname, '../src/viewer/public/graph.json');
 const rootDriftPath = path.join(__dirname, '../drift.json');
 const viewerDriftPath = path.join(__dirname, '../src/viewer/public/drift.json');
+const rootDriftpackPath = path.join(__dirname, '../.dotto/driftpack.json');
+const viewerDriftpackPath = path.join(__dirname, '../src/viewer/public/driftpack.json');
 
 // Check if root graph.json exists
 if (!fs.existsSync(rootGraphPath)) {
@@ -40,4 +42,17 @@ if (fs.existsSync(rootDriftPath)) {
   // Create empty drift.json
   fs.writeFileSync(viewerDriftPath, JSON.stringify({ diffs: [] }, null, 2));
   console.log('ℹ️  No drift.json found, created empty one');
+}
+
+// Copy driftpack.json if it exists
+if (fs.existsSync(rootDriftpackPath)) {
+  try {
+    const driftpackData = fs.readFileSync(rootDriftpackPath, 'utf-8');
+    fs.writeFileSync(viewerDriftpackPath, driftpackData);
+    console.log('✅ Copied driftpack.json to viewer');
+  } catch (error) {
+    console.warn('⚠️  Failed to copy driftpack.json:', error.message);
+  }
+} else {
+  console.log('ℹ️  No driftpack.json found (run "dotto scan" to generate)');
 }
