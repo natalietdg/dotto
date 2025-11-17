@@ -14,6 +14,7 @@ export interface RiskCalculationDto {
   position_id: string;
   symbol: string;
   
+  
   // Trade data
   quantity: number;
   avg_entry_price: number;
