@@ -2,6 +2,22 @@
   base = "src/viewer"
   command = "npm install && npm run build"
   publish = "dist"
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Allow HEDERA_NETWORK in client code (it's just "testnet", not a secret)
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
 
 [[redirects]]
   from = "/*"
