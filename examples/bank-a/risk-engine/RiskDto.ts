@@ -10,9 +10,10 @@ import { TradeDto } from '../trade-core/TradeDto';
  * CRITICAL: Uses TradeDto.price_precision for rounding
  */
 export interface RiskCalculationDto {
-  calculation_id: string;
+  calculation_id: number;
   position_id: string;
   symbol: string;
+  
   
   // Trade data
   quantity: number;
