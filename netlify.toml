@@ -1,7 +1,7 @@
 [build]
-  base = "src/viewer"
-  command = "npm install && npm run build"
-  publish = "dist"
+  base = "."
+  command = "npm install && npm run build && (node dist/cli/index.js scan --base origin/main || true) && node dist/cli/index.js crawl && node scripts/prepare-viewer.js && cd src/viewer && npm install && npm run build"
+  publish = "src/viewer/dist"
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
 
 [build.environment]

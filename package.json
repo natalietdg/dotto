@@ -13,7 +13,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run dev",
+    "build": "tsc",
     "prepublishOnly": "npm run build",
     "dev": "npm run build && (node dist/cli/index.js scan --base origin/main || true) && node dist/cli/index.js crawl && node scripts/prepare-viewer.js && cd src/viewer && npm install && npm run dev",
     "demo": "npm run build && node dist/cli/index.js crawl && node scripts/prepare-viewer.js && cd src/viewer && npm run dev",
