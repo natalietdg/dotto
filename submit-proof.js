@@ -68,7 +68,7 @@ async function submitProof() {
     
     if (graph.nodes && graph.nodes[0]) {
       // Keep existing v1 if it exists
-      const v1TxId = graph.nodes[0].metadata.v1TxId || '0.0.7223674@1762677739.827436664';
+      const v1TxId = graph.nodes[0].metadata.v1TxId || 'x@1762677739.827436664';
       const v1Consensus = graph.nodes[0].metadata.v1Consensus || '1762677746.215009000';
       
       graph.nodes[0].metadata.v1TxId = v1TxId;
