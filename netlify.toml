@@ -6,6 +6,8 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  # Tell Netlify that HEDERA_NETWORK is not a secret (it's just "testnet")
+  SECRETS_SCAN_OMIT_KEYS = "HEDERA_NETWORK"
 
 # Allow HEDERA_NETWORK in client code (it's just "testnet", not a secret)
 [build.processing]
