@@ -100,13 +100,14 @@ export class HederaBackend implements ProofBackend {
     const response = await transaction.execute(this.client);
     const receipt = await response.getReceipt(this.client);
     
+    const transactionId = response.transactionId.toString();
     const txId = `${this.topicId}@${receipt.topicSequenceNumber}`;
     
     return {
       backend: this.name,
       id: txId,
       timestamp: new Date().toISOString(),
-      link: `https://hashscan.io/testnet/topic/${this.topicId}/message/${receipt.topicSequenceNumber}`,
+      link: `https://hashscan.io/testnet/transaction/${transactionId}`,
     };
   }
   
