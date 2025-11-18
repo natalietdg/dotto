@@ -23,7 +23,7 @@ export class HederaBackend implements ProofBackend {
   private epochManager: EpochManager;
   private batchMode: boolean;
   
-  constructor(batchMode: boolean = true, epochIntervalMinutes: number = 15) {
+  constructor(batchMode: boolean = false, epochIntervalMinutes: number = 15) {
     this.topicId = process.env.HEDERA_TOPIC_ID || '';
     this.epochManager = new EpochManager(epochIntervalMinutes);
     this.batchMode = batchMode;
@@ -106,7 +106,7 @@ export class HederaBackend implements ProofBackend {
       backend: this.name,
       id: txId,
       timestamp: new Date().toISOString(),
-      link: `https://hashscan.io/testnet/transaction/${txId}`,
+      link: `https://hashscan.io/testnet/topic/${this.topicId}/message/${receipt.topicSequenceNumber}`,
     };
   }
   
