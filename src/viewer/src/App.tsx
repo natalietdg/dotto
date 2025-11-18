@@ -67,10 +67,43 @@ function App() {
       // Create drift lookup map
       const driftMap = new Map(driftData.diffs.map((d: any) => [d.nodeId, d]));
       
-      // Convert graph nodes to artifacts
+      // Find nodes with breaking changes
+      const breakingNodeIds = new Set(
+        Array.from(driftMap.values())
+          .filter((d: any) => d.breaking)
+          .map((d: any) => d.nodeId)
+      );
+      
+      // Calculate upstream impact (nodes that USE the breaking changes)
+      // Edge format: { source: "A", target: "B" } means "A uses B"
+      // So if B has breaking changes, find all edges where target === B
+      const impactedNodeIds = new Set<string>();
+      const findUpstream = (nodeId: string) => {
+        edgesArray
+          .filter((e: any) => e.target === nodeId) // Find who uses this node
+          .forEach((e: any) => {
+            if (!impactedNodeIds.has(e.source) && !breakingNodeIds.has(e.source)) {
+              impactedNodeIds.add(e.source);
+              findUpstream(e.source); // Recursive: find who uses them too
+            }
+          });
+      };
+      
+      breakingNodeIds.forEach(nodeId => findUpstream(nodeId));
+      
+      // Load certificate
+      const response = await fetch('/driftpack.json');
+      const certificate = response.ok ? await response.json() : null;
+      
       const artifactList: Artifact[] = nodesArray.map((node: any) => {
         const drift = driftMap.get(node.id);
-        const status = drift?.breaking ? 'drifted' : 'verified';
+        const hasBreaking = drift?.breaking;
+        const isImpacted = impactedNodeIds.has(node.id);
+        
+        // Status: breaking > impacted > verified
+        let status = 'verified';
+        if (hasBreaking) status = 'drifted';
+        else if (isImpacted) status = 'changed';
         
         return {
           id: node.id,
@@ -92,6 +125,7 @@ function App() {
               changes: drift.changes,
             } : undefined,
           },
+          certificate
         };
       });
       
@@ -247,17 +281,6 @@ function App() {
           >
             📖 Demo Guide
           </button>
-          {proof && proof.hashscan && (
-            <a 
-              href={proof.hashscan} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="proof-badge"
-              title="View proof on HashScan"
-            >
-              ✅ Verified on Hedera
-            </a>
-          )}
           <span className="status-badge verified">
             {artifacts.filter((a) => a.status === 'verified').length} ✓ OK
           </span>

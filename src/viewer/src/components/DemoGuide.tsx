@@ -106,11 +106,10 @@ function DemoGuide({ isOpen, onClose }: DemoGuideProps) {
             🧩 <strong>dotto</strong> makes schema dependencies visible and verifiable.<br />
             Understand impact before you ship. Detect drift before it breaks production.
           </p>
-          </div>
-        </div>
 
-        <div className="modal-footer">
+
           <button className="btn-primary" onClick={onClose}>Got It!</button>
+          </div>
         </div>
       </div>
   );

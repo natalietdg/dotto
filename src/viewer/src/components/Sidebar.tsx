@@ -9,6 +9,7 @@ interface SidebarProps {
 }
 
 function Sidebar({ artifact, onClose, lastUpdate }: SidebarProps) {
+
   const [width, setWidth] = useState(400);
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -158,11 +159,11 @@ function Sidebar({ artifact, onClose, lastUpdate }: SidebarProps) {
         <div className="detail-section">
           <label>Verification Status</label>
           <div className="detail-value">
-            {artifact.metadata?.hcsTimestamp ? '✅ Verified on Hedera' : '⏳ Pending verification'}
+            {artifact?.certificate?.proof?.transactionId ? '✅ Verified on Hedera' : '⏳ Pending verification'}
           </div>
         </div>
 
-        {artifact.hederaTxId && (
+        {artifact?.certificate?.proof?.transactionId && (
           <div className="detail-section">
             <label>Hedera TX</label>
             <div className="detail-value">

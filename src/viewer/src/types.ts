@@ -1,3 +1,4 @@
+import { DriftCertificate } from '../../export/DriftCertificate';
 export interface Artifact {
   id: string;
   name: string;
@@ -13,4 +14,5 @@ export interface Artifact {
     hcsTimestamp?: string;
     [key: string]: any;
   };
+  certificate?: DriftCertificate;
 }
