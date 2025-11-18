@@ -15,10 +15,11 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
-    "dev": "npm run build && (node dist/cli/index.js scan --base origin/main || true) && node dist/cli/index.js crawl && node scripts/prepare-viewer.js && cd src/viewer && npm install && npm run dev",
+    "dev": "npm run build && (node dist/cli/index.js scan --base origin/main) && node dist/cli/index.js crawl && node scripts/prepare-viewer.js && cd src/viewer && npm install && npm run dev",
     "demo": "npm run build && node dist/cli/index.js crawl && node scripts/prepare-viewer.js && cd src/viewer && npm run dev",
     "test": "echo \"Tests coming soon\" && exit 0",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "anchor": "npm run build && dotto anchor && node scripts/prepare-viewer.js"
   },
   "repository": {
     "type": "git",
@@ -44,18 +45,18 @@
   "license": "MIT",
   "dependencies": {
     "@hashgraph/sdk": "^2.54.0",
-    "archiver": "^7.0.1",
     "chalk": "^4.1.2",
     "commander": "^12.0.0",
     "dotenv": "^16.4.5",
     "fast-glob": "^3.3.2",
-    "js-yaml": "^4.1.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "archiver": "^7.0.1",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@types/node": "^20.11.5",
     "@types/archiver": "^6.0.2",
-    "@types/js-yaml": "^4.0.9",
-    "@types/node": "^20.11.5"
+    "@types/js-yaml": "^4.0.9"
   },
   "engines": {
     "node": ">=18.0.0"
