@@ -98,12 +98,14 @@ function App() {
       const artifactList: Artifact[] = nodesArray.map((node: any) => {
         const drift = driftMap.get(node.id);
         const hasBreaking = drift?.breaking;
+        const hasNonBreaking = drift && !drift.breaking;
         const isImpacted = impactedNodeIds.has(node.id);
         
-        // Status: breaking > impacted > verified
+        // Status priority: breaking > changed > impacted > verified
         let status = 'verified';
         if (hasBreaking) status = 'drifted';
-        else if (isImpacted) status = 'changed';
+        else if (hasNonBreaking) status = 'changed';
+        else if (isImpacted) status = 'impacted';
         
         return {
           id: node.id,
@@ -161,8 +163,9 @@ function App() {
       const row = Math.floor(index / 4);
 
       let nodeColor = '#10b981'; // green - verified
-      if (artifact.status === 'changed') nodeColor = '#f59e0b'; // yellow
-      if (artifact.status === 'drifted') nodeColor = '#ef4444'; // red
+      if (artifact.status === 'changed') nodeColor = '#3b82f6'; // blue - non-breaking changes
+      if (artifact.status === 'impacted') nodeColor = '#f59e0b'; // yellow/orange - impacted by breaking changes
+      if (artifact.status === 'drifted') nodeColor = '#ef4444'; // red - breaking changes
 
       return {
         id: artifact.id,

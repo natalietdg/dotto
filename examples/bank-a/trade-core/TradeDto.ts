@@ -43,6 +43,12 @@ export interface OrderDto {
   stop_price?: number;
   time_in_force: 'DAY' | 'GTC' | 'IOC' | 'FOK';
   created_at: Date;
+  
+  /**
+   * @intent Optional notes for audit trail
+   * Non-breaking addition for enhanced compliance tracking
+   */
+  notes?: string;
 }
 
 /**

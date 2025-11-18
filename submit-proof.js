@@ -86,7 +86,7 @@ async function submitProof() {
     const proofPath = 'src/viewer/public/proof.json';
     const proof = JSON.parse(fs.readFileSync(proofPath, 'utf8'));
     proof.txId = txId;
-    proof.hashscan = `https://hashscan.io/testnet/transaction/${txId}`;
+    proof.hashscan = `https://hashscan.io/testnet/transaction/${consensusTimestamp}`;
     proof.timestamp = new Date().toISOString();
     fs.writeFileSync(proofPath, JSON.stringify(proof, null, 2));
     console.log('✓ Updated proof.json with real transaction ID');
