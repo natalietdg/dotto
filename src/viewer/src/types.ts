@@ -5,7 +5,7 @@ export interface Artifact {
   file: string;
   hash: string;
   dependencies: string[];
-  status: 'verified' | 'changed' | 'drifted';
+  status: 'verified' | 'changed' | 'impacted' | 'drifted';
   hederaTxId?: string;
   lastModified: string;
   metadata?: {
