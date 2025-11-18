@@ -71,7 +71,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.679Z"
+      "lastModified": "2025-11-18T11:33:25.932Z"
     },
     "examples/bank-a/clearing/ClearingDto.ts:SettlementBatchDto": {
       "id": "examples/bank-a/clearing/ClearingDto.ts:SettlementBatchDto",
@@ -114,7 +114,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.679Z"
+      "lastModified": "2025-11-18T11:33:25.932Z"
     },
     "examples/bank-a/clearing/ClearingDto.ts:ReconciliationDto": {
       "id": "examples/bank-a/clearing/ClearingDto.ts:ReconciliationDto",
@@ -157,21 +157,21 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.679Z"
+      "lastModified": "2025-11-18T11:33:25.932Z"
     },
     "examples/bank-a/risk-engine/RiskDto.ts:RiskCalculationDto": {
       "id": "examples/bank-a/risk-engine/RiskDto.ts:RiskCalculationDto",
       "type": "schema",
       "name": "RiskCalculationDto",
       "filePath": "examples/bank-a/risk-engine/RiskDto.ts",
-      "fileHash": "e99e5651121b6a83a6ec3c624e9c7b7fed2554d9c71e664fb8d0611d5bdb1c86",
+      "fileHash": "dc995f961dab611450936ea2fe3981cc1e0544573802f1a79020218c7f0b053e",
       "metadata": {
         "kind": "interface"
       },
       "properties": [
         {
           "name": "calculation_id",
-          "type": "string",
+          "type": "number",
           "required": true
         },
         {
@@ -235,14 +235,14 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.681Z"
+      "lastModified": "2025-11-18T11:33:25.935Z"
     },
     "examples/bank-a/risk-engine/RiskDto.ts:ExposureDto": {
       "id": "examples/bank-a/risk-engine/RiskDto.ts:ExposureDto",
       "type": "schema",
       "name": "ExposureDto",
       "filePath": "examples/bank-a/risk-engine/RiskDto.ts",
-      "fileHash": "e99e5651121b6a83a6ec3c624e9c7b7fed2554d9c71e664fb8d0611d5bdb1c86",
+      "fileHash": "dc995f961dab611450936ea2fe3981cc1e0544573802f1a79020218c7f0b053e",
       "metadata": {
         "kind": "interface"
       },
@@ -298,14 +298,14 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.681Z"
+      "lastModified": "2025-11-18T11:33:25.935Z"
     },
     "examples/bank-a/risk-engine/RiskDto.ts:PortfolioRiskDto": {
       "id": "examples/bank-a/risk-engine/RiskDto.ts:PortfolioRiskDto",
       "type": "schema",
       "name": "PortfolioRiskDto",
       "filePath": "examples/bank-a/risk-engine/RiskDto.ts",
-      "fileHash": "e99e5651121b6a83a6ec3c624e9c7b7fed2554d9c71e664fb8d0611d5bdb1c86",
+      "fileHash": "dc995f961dab611450936ea2fe3981cc1e0544573802f1a79020218c7f0b053e",
       "metadata": {
         "kind": "interface"
       },
@@ -356,14 +356,14 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.681Z"
+      "lastModified": "2025-11-18T11:33:25.935Z"
     },
     "examples/bank-a/risk-engine/RiskDto.ts:VaRDto": {
       "id": "examples/bank-a/risk-engine/RiskDto.ts:VaRDto",
       "type": "schema",
       "name": "VaRDto",
       "filePath": "examples/bank-a/risk-engine/RiskDto.ts",
-      "fileHash": "e99e5651121b6a83a6ec3c624e9c7b7fed2554d9c71e664fb8d0611d5bdb1c86",
+      "fileHash": "dc995f961dab611450936ea2fe3981cc1e0544573802f1a79020218c7f0b053e",
       "metadata": {
         "kind": "interface"
       },
@@ -404,14 +404,14 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.681Z"
+      "lastModified": "2025-11-18T11:33:25.935Z"
     },
     "examples/bank-a/trade-core/TradeDto.ts:TradeDto": {
       "id": "examples/bank-a/trade-core/TradeDto.ts:TradeDto",
       "type": "schema",
       "name": "TradeDto",
       "filePath": "examples/bank-a/trade-core/TradeDto.ts",
-      "fileHash": "899ea0eecf85c5f9e465a12f0f14cf936d40b0aef7cf268b2d72399892d68d66",
+      "fileHash": "ea488f5b585e83a9a217d706ac84042f17720ea28ffb642d6044edcc5b9fec4b",
       "metadata": {
         "kind": "interface"
       },
@@ -477,14 +477,14 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.682Z"
+      "lastModified": "2025-11-18T11:33:25.934Z"
     },
     "examples/bank-a/trade-core/TradeDto.ts:OrderDto": {
       "id": "examples/bank-a/trade-core/TradeDto.ts:OrderDto",
       "type": "schema",
       "name": "OrderDto",
       "filePath": "examples/bank-a/trade-core/TradeDto.ts",
-      "fileHash": "899ea0eecf85c5f9e465a12f0f14cf936d40b0aef7cf268b2d72399892d68d66",
+      "fileHash": "ea488f5b585e83a9a217d706ac84042f17720ea28ffb642d6044edcc5b9fec4b",
       "metadata": {
         "kind": "interface"
       },
@@ -538,16 +538,21 @@
           "name": "created_at",
           "type": "Date",
           "required": true
+        },
+        {
+          "name": "notes",
+          "type": "string",
+          "required": false
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.682Z"
+      "lastModified": "2025-11-18T11:33:25.934Z"
     },
     "examples/bank-a/trade-core/TradeDto.ts:ExecutionReportDto": {
       "id": "examples/bank-a/trade-core/TradeDto.ts:ExecutionReportDto",
       "type": "schema",
       "name": "ExecutionReportDto",
       "filePath": "examples/bank-a/trade-core/TradeDto.ts",
-      "fileHash": "899ea0eecf85c5f9e465a12f0f14cf936d40b0aef7cf268b2d72399892d68d66",
+      "fileHash": "ea488f5b585e83a9a217d706ac84042f17720ea28ffb642d6044edcc5b9fec4b",
       "metadata": {
         "kind": "interface"
       },
@@ -593,7 +598,7 @@
           "required": true
         }
       ],
-      "lastModified": "2025-11-12T06:26:45.682Z"
+      "lastModified": "2025-11-18T11:33:25.934Z"
     }
   },
   "edges": {
@@ -648,5 +653,5 @@
     }
   },
   "version": "1.1.0",
-  "lastCrawl": "2025-11-12T06:26:45.683Z"
+  "lastCrawl": "2025-11-18T11:33:25.935Z"
 }

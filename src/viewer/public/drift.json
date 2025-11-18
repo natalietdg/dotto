@@ -1,7 +1,52 @@
 {
-  "timestamp": "2025-11-12T06:26:45.370Z",
-  "baseCommit": "78917c32b6fbccea15f49eeb69d0a45bb325129b",
-  "headCommit": "working-directory",
-  "diffs": [],
-  "filesChanged": []
+  "timestamp": "2025-11-18T11:32:47.105Z",
+  "baseCommit": "b587261869ba01e9002624df37ad8a35064864ba",
+  "headCommit": "fa66e9ca7cad7f013ba055d4a030b56eadf0d759",
+  "diffs": [
+    {
+      "nodeId": "examples/bank-a/risk-engine/RiskDto.ts:RiskCalculationDto",
+      "name": "RiskCalculationDto",
+      "type": "schema",
+      "changeType": "modified",
+      "breaking": true,
+      "changes": [
+        {
+          "type": "field_type_changed",
+          "path": "calculation_id",
+          "oldValue": "string",
+          "newValue": "number",
+          "breaking": true,
+          "description": "Property \"calculation_id\" type changed from \"string\" to \"number\""
+        }
+      ]
+    },
+    {
+      "nodeId": "examples/bank-a/risk-engine/RiskDto.ts:ExposureDto",
+      "name": "ExposureDto",
+      "type": "schema",
+      "changeType": "modified",
+      "breaking": false,
+      "changes": []
+    },
+    {
+      "nodeId": "examples/bank-a/risk-engine/RiskDto.ts:PortfolioRiskDto",
+      "name": "PortfolioRiskDto",
+      "type": "schema",
+      "changeType": "modified",
+      "breaking": false,
+      "changes": []
+    },
+    {
+      "nodeId": "examples/bank-a/risk-engine/RiskDto.ts:VaRDto",
+      "name": "VaRDto",
+      "type": "schema",
+      "changeType": "modified",
+      "breaking": false,
+      "changes": []
+    }
+  ],
+  "filesChanged": [
+    "examples/bank-a/risk-engine/RiskDto.ts",
+    "src/git/GitScanner.ts"
+  ]
 }
